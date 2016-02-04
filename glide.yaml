@@ -1,0 +1,9 @@
+package: github.com/marcuswestin/birect
+import:
+- package: fmt
+- package: github.com/golang/protobuf
+  subpackages:
+  - /proto
+- package: github.com/marcuswestin/go-ws
+- package: math
+- package: strings
