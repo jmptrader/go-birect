@@ -1,6 +1,5 @@
-GOLINT := $(GOPATH)/bin/golint
-GO_PROTOS := internal/wire/*.pb.go
-PROTOEASY := $(GOPATH)/bin/protoeasy
+# Testing
+#########
 
 test: protos test-without-proto-compilation
 test-without-proto-compilation: lint vet
@@ -11,13 +10,21 @@ lint:
 vet:
 	go vet .
 
+# Protobuf compilation
+######################
+
+GO_PROTOS := internal/wire/*.pb.go
 protos: $(GO_PROTOS)
-$(GO_PROTOS): protos/*.proto $(PROTOEASY)
-	PATH=$(PATH):$(GOPATH)/bin && $(PROTOEASY) --go ./protos --out ./internal/wire
-$(PROTOEASY): protoc
+$(GO_PROTOS): protos/*.proto
+	protoeasy --go ./protos --out ./internal/wire
+
+# Dependencies
+##############
+
+install-protoeasy: protoc
 	go get go.pedge.io/protoeasy/cmd/protoeasy
 	go get github.com/golang/protobuf/protoc-gen-go
-$(GOLINT):
+install-golint:
 	go get github.com/golang/lint/golint
-protoc:
+install-protoc:
 	./scripts/install-protoc.sh

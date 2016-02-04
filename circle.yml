@@ -1,6 +1,6 @@
 dependencies:
   post:
-    - go get -u github.com/golang/lint/golint
+    - make install-golint
 
 test:
   override:
