@@ -5,9 +5,9 @@ PROTOEASY := $(GOPATH)/bin/protoeasy
 test: protos test-without-proto-compilation
 test-without-proto-compilation: lint vet
 	go test --race -v .
-lint: $(GOLINT)
-	$(GOLINT) .
-	test -z "$$($(GOLINT) .)"
+lint:
+	golint .
+	test -z "$$(golint .)"
 vet:
 	go vet .
 
