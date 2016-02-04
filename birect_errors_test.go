@@ -56,7 +56,7 @@ func TestDefaultErrorMessage(t *testing.T) {
 
 // Misc utils
 /////////////
-var lastPort = 25001
+var lastPort = 18000
 
 func setupServerClient() (*birect.Server, *birect.Client) {
 	lastPort += 1
