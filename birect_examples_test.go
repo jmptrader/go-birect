@@ -2,13 +2,18 @@ package birect_test
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/marcuswestin/go-birect"
 )
 
 func ExampleUpgradeRequests_server() {
-	go http.ListenAndServe("localhost:8087", nil)
+	listener, err := net.Listen("tcp", ":8087")
+	if err != nil {
+		panic(err)
+	}
+	go http.Serve(listener, nil)
 	server := birect.UpgradeRequests("/birect/upgrade")
 
 	type EchoParams struct{ Text string }

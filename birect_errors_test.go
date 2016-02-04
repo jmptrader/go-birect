@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"testing"
 
@@ -60,7 +61,12 @@ var lastPort = 18000
 
 func setupServerClient() (*birect.Server, *birect.Client) {
 	lastPort += 1
-	go http.ListenAndServe(fmt.Sprintf("localhost:%d", lastPort), nil)
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", lastPort))
+	if err != nil {
+		panic(err)
+	}
+	go http.Serve(listener, nil)
+
 	server := birect.UpgradeRequests(fmt.Sprintf("/birect/upgrade/%d", lastPort))
 	client, err := birect.Connect(fmt.Sprintf("http://localhost:%d/birect/upgrade/%d", lastPort, lastPort))
 	if err != nil {
