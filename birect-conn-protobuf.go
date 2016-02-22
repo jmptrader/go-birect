@@ -6,18 +6,15 @@ import (
 	"github.com/marcuswestin/go-errs"
 )
 
-// Req is an alias for proto.Message
-type Req proto.Message
-
-// Res is an alias for proto.Message
-type Res proto.Message
+// Proto is an alias for proto.Message
+type Proto proto.Message
 
 // ProtoReqHandler functions get called on every proto request
-type ProtoReqHandler func(req *ProtoReq) (resValue Res, err error)
+type ProtoReqHandler func(req *ProtoReq) (resValue Proto, err error)
 
 // SendProtoReq sends a request for the ProtoReqHandler with the given `name`, along with the
 // given paramsObj. When the server responds, SendProtoReq will parse the response into resValPtr.
-func (c *Conn) SendProtoReq(name string, paramsObj Req, resValPtr Res) (err error) {
+func (c *Conn) SendProtoReq(name string, paramsObj Proto, resValPtr Proto) (err error) {
 	data, err := proto.Marshal(paramsObj)
 	if err != nil {
 		return
@@ -35,7 +32,7 @@ type ProtoReq struct {
 
 // ParseParams parses the ProtoReq values into the given valuePtr.
 // valuePtr should be a pointer to a struct that implements Proto.message.
-func (p *ProtoReq) ParseParams(valuePtr Req) {
+func (p *ProtoReq) ParseParams(valuePtr Proto) {
 	err := proto.Unmarshal(p.data, valuePtr)
 	if err != nil {
 		panic(errs.Wrap(err, nil, "Unable to parse params"))
@@ -69,7 +66,7 @@ func (c *Conn) handleProtoWireReq(wireReq *wire.Request) {
 }
 
 type protoRes struct {
-	resValPtr Res
+	resValPtr Proto
 }
 
 func (j *protoRes) encode() ([]byte, error) {
