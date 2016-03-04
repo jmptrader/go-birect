@@ -2,6 +2,7 @@ package birect
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/marcuswestin/go-birect/internal/wire"
 	"github.com/marcuswestin/go-errs"

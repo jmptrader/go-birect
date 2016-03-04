@@ -1,6 +1,8 @@
 package birect
 
 import (
+	"fmt"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/marcuswestin/go-birect/internal/wire"
 	"github.com/marcuswestin/go-errs"
