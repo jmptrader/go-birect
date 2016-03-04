@@ -14,6 +14,8 @@ type Server struct {
 	protoReqHandlerMap
 	connByWSConnMutex *sync.Mutex
 	connByWSConn      map[*ws.Conn]*Conn
+	ConnectHandler    func(*Conn)
+	DisconnectHandler func(*Conn)
 }
 
 // UpgradeRequests will upgrade all incoming HTTP requests that match `pattern`
@@ -24,6 +26,8 @@ func UpgradeRequests(pattern string) (server *Server) {
 		make(protoReqHandlerMap),
 		&sync.Mutex{},
 		make(map[*ws.Conn]*Conn, 10000),
+		func(*Conn) {},
+		func(*Conn) {},
 	}
 	ws.UpgradeRequests(pattern, func(event *ws.Event, wsConn *ws.Conn) {
 		log.Println("Server:", event)
@@ -49,12 +53,16 @@ func UpgradeRequests(pattern string) (server *Server) {
 func (s *Server) registerConn(wsConn *ws.Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
-	s.connByWSConn[wsConn] = newConn(wsConn, s.jsonReqHandlerMap, s.protoReqHandlerMap)
+	conn := newConn(wsConn, s.jsonReqHandlerMap, s.protoReqHandlerMap)
+	s.connByWSConn[wsConn] = conn
+	defer s.ConnectHandler(conn)
 }
 func (s *Server) deregisterConn(wsConn *ws.Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
+	conn := s.connByWSConn[wsConn]
 	delete(s.connByWSConn, wsConn)
+	defer s.DisconnectHandler(conn)
 }
 func (s *Server) getConn(wsConn *ws.Conn) *Conn {
 	s.connByWSConnMutex.Lock()

@@ -22,6 +22,10 @@ type Conn struct {
 	resChans  map[reqID]resChan
 	jsonReqHandlerMap
 	protoReqHandlerMap
+
+	// Use info to associate information with a connection, e.g
+	// authenticated user information
+	Info interface{}
 }
 
 // Log logs the given arguments, along with contextual information about the Conn.
@@ -36,7 +40,7 @@ type reqID uint32
 type resChan chan *wire.Response
 
 func newConn(wsConn *ws.Conn, jsonHandlers jsonReqHandlerMap, protoHandlers protoReqHandlerMap) *Conn {
-	return &Conn{wsConn, 0, make(map[reqID]resChan, 1), jsonHandlers, protoHandlers}
+	return &Conn{wsConn, 0, make(map[reqID]resChan, 1), jsonHandlers, protoHandlers, nil}
 }
 
 type request interface {
@@ -112,6 +116,7 @@ func (c *Conn) sendErrorResponse(wireReq *wire.Request, err error) {
 		Type:    wire.DataType_Text,
 		Data:    []byte(publicMessage),
 	}
+	c.Log("Req ERROR", wireReq.ReqId, err)
 	c.sendWrapper(&wire.Wrapper{
 		Content: &wire.Wrapper_Response{Response: wireRes},
 	})
