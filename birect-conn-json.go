@@ -68,13 +68,26 @@ func (c *Conn) handleJSONWireReq(wireReq *wire.Request) {
 			c.sendErrorResponse(wireReq, errs.Wrap(err, errs.Info{"Name": wireReq.Name, "Data": wireReq.Data}))
 		}
 	}()
-	resVal, err := handler(&JSONReq{c, wireReq.Data})
+	resVal, err := _runJSONHandler(handler, &JSONReq{c, wireReq.Data})
 	if err != nil {
 		c.sendErrorResponse(wireReq, errs.Wrap(err, errs.Info{"HandlerName": wireReq.Name}))
 		return
 	}
 	// Send response
 	c.sendResponse(wireReq, &jsonRes{resVal})
+}
+
+func _runJSONHandler(handler JSONReqHandler, jsonReq *JSONReq) (res interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if rErr, ok := r.(error); ok {
+				err = rErr
+			} else {
+				err = errs.New(nil, fmt.Sprint(r))
+			}
+		}
+	}()
+	return handler(jsonReq)
 }
 
 type jsonRes struct {

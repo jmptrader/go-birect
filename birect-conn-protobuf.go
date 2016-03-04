@@ -56,13 +56,28 @@ func (c *Conn) handleProtoWireReq(wireReq *wire.Request) {
 		return
 	}
 	// Execute handler
-	resVal, err := handler(&ProtoReq{c, wireReq.Data})
+	resVal, err := _runProtoHandler(handler, &ProtoReq{c, wireReq.Data})
 	if err != nil {
 		c.sendErrorResponse(wireReq, err)
 		return
 	}
 	// Send response
 	c.sendResponse(wireReq, &protoRes{resVal})
+}
+
+func _runProtoHandler(handler ProtoReqHandler, protoReq *ProtoReq) (res Proto, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if errsErr, ok := r.(errs.Err); ok {
+				err = errsErr
+			} else if stdErr, ok := r.(error); ok {
+				err = errs.Wrap(stdErr, nil)
+			} else {
+				err = errs.New(nil, fmt.Sprint(r))
+			}
+		}
+	}()
+	return handler(protoReq)
 }
 
 type protoRes struct {
