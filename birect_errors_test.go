@@ -36,11 +36,11 @@ func TestApplicationError(t *testing.T) {
 	})
 
 	var res AuthenticateResponse
-	err = client.SendJSONReq("Authenticate", AuthenticateParams{"badsecret"}, &res)
+	err = client.SendJSONReq("Authenticate", &res, AuthenticateParams{Secret: "badsecret"})
 	assert(t, err != nil)
 	assert(t, err.Error() == "Wrong secret: badsecret")
 	assert(t, res.SessionToken == "")
-	err = client.SendJSONReq("Authenticate", AuthenticateParams{"foobarcat"}, &res)
+	err = client.SendJSONReq("Authenticate", &res, AuthenticateParams{Secret: "foobarcat"})
 	assert(t, err == nil)
 	assert(t, res.SessionToken == "asd71lgd1892d1")
 }

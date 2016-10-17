@@ -16,7 +16,7 @@ type ProtoReqHandler func(req *ProtoReq) (resValue Proto, err error)
 
 // SendProtoReq sends a request for the ProtoReqHandler with the given `name`, along with the
 // given paramsObj. When the server responds, SendProtoReq will parse the response into resValPtr.
-func (c *Conn) SendProtoReq(name string, paramsObj Proto, resValPtr Proto) (err error) {
+func (c *Conn) SendProtoReq(name string, resValPtr Proto, paramsObj Proto) (err error) {
 	data, err := proto.Marshal(paramsObj)
 	if err != nil {
 		return

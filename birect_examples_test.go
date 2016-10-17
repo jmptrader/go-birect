@@ -35,7 +35,7 @@ func ExampleConnect_client() {
 	var par = EchoParams{"Hi!"}
 	var res EchoResponse
 	fmt.Println("Send:", par.Text)
-	conn.SendJSONReq("Echo", par, &res)
+	conn.SendJSONReq("Echo", &res, par)
 	fmt.Println("Received:", res.Text)
 
 	// Output:

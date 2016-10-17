@@ -13,7 +13,7 @@ type JSONReqHandler func(req *JSONReq) (resValue interface{}, err error)
 
 // SendJSONReq sends a request for the JSONReqHandler with the given `name`, along with the
 // given paramsObj. When the server responds, SendJSONReq will parse the response into resValPtr.
-func (c *Conn) SendJSONReq(name string, paramsObj interface{}, resValPtr interface{}) (err error) {
+func (c *Conn) SendJSONReq(name string, resValPtr interface{}, paramsObj interface{}) (err error) {
 	data, err := json.Marshal(paramsObj)
 	if err != nil {
 		return
