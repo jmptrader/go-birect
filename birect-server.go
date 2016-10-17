@@ -55,14 +55,18 @@ func (s *Server) registerConn(wsConn *ws.Conn) {
 	defer s.connByWSConnMutex.Unlock()
 	conn := newConn(wsConn, s.jsonReqHandlerMap, s.protoReqHandlerMap)
 	s.connByWSConn[wsConn] = conn
-	defer s.ConnectHandler(conn)
+	if s.ConnectHandler != nil {
+		defer s.ConnectHandler(conn)
+	}
 }
 func (s *Server) deregisterConn(wsConn *ws.Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	conn := s.connByWSConn[wsConn]
 	delete(s.connByWSConn, wsConn)
-	defer s.DisconnectHandler(conn)
+	if s.DisconnectHandler != nil {
+		defer s.DisconnectHandler(conn)
+	}
 }
 func (s *Server) getConn(wsConn *ws.Conn) *Conn {
 	s.connByWSConnMutex.Lock()
