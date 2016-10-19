@@ -8,6 +8,9 @@ type Client struct {
 	jsonReqHandlerMap
 	protoReqHandlerMap
 	*Conn
+
+	// Temporary
+	OnDisconnectHack func()
 }
 
 // Connect connects to a birect server at url
@@ -27,6 +30,9 @@ func Connect(url string) (client *Client, err error) {
 			client.Conn.readAndHandleWireWrapperReader(event)
 		case ws.Disconnected:
 			client.Log("TODO: reconnect logic (Disconnected)")
+			if client.OnDisconnectHack != nil {
+				client.OnDisconnectHack()
+			}
 		case ws.NetError:
 			client.Log("NetError")
 		default:
