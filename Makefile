@@ -1,8 +1,11 @@
 # Testing
 #########
 
-test: protos test-without-proto-compilation
-test-without-proto-compilation: lint vet
+test: lint vet protos run-tests
+
+ci-test: vet run-tests
+
+run-tests:
 	go test --race -v .
 lint:
 	golint .

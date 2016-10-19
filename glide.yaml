@@ -1,9 +1,7 @@
-package: github.com/marcuswestin/birect
+package: github.com/marcuswestin/go-birect
 import:
-- package: fmt
 - package: github.com/golang/protobuf
   subpackages:
-  - /proto
+  - proto
+- package: github.com/marcuswestin/go-errs
 - package: github.com/marcuswestin/go-ws
-- package: math
-- package: strings
