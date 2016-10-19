@@ -45,6 +45,12 @@ func UpgradeRequests(pattern string) (server *Server) {
 	return server
 }
 
+func (s *Server) ConnCount() int {
+	s.connByWSConnMutex.Lock()
+	defer s.connByWSConnMutex.Unlock()
+	return len(s.connByWSConn)
+}
+
 // Internal
 ///////////
 
