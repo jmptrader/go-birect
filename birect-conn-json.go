@@ -3,6 +3,7 @@ package birect
 import (
 	"encoding/json"
 	"fmt"
+	runtimeDebug "runtime/debug"
 
 	"github.com/marcuswestin/go-birect/internal/wire"
 	"github.com/marcuswestin/go-errs"
@@ -65,7 +66,8 @@ func (c *Conn) handleJSONWireReq(wireReq *wire.Request) {
 			if !ok {
 				err = errs.New(errs.Info{"Recovery": r})
 			}
-			c.Log("Error while handling request", wireReq.Name, err)
+			stack := string(runtimeDebug.Stack())
+			c.Log("Error while handling request", wireReq.Name, err, stack)
 			c.sendErrorResponse(wireReq, errs.Wrap(err, errs.Info{"Name": wireReq.Name, "Data": wireReq.Data}))
 		}
 	}()

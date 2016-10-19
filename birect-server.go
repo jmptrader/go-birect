@@ -1,7 +1,6 @@
 package birect
 
 import (
-	"log"
 	"sync"
 
 	"github.com/marcuswestin/go-ws"
@@ -30,7 +29,6 @@ func UpgradeRequests(pattern string) (server *Server) {
 		func(*Conn) {},
 	}
 	ws.UpgradeRequests(pattern, func(event *ws.Event, wsConn *ws.Conn) {
-		log.Println("Server:", event)
 		switch event.Type {
 		case ws.Connected:
 			server.registerConn(wsConn)

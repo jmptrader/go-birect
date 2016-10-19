@@ -14,6 +14,14 @@ import (
 	"github.com/marcuswestin/go-ws"
 )
 
+var Debug = false
+
+func debug(args ...interface{}) {
+	if Debug {
+		log.Println(args...)
+	}
+}
+
 // Conn represents a persistent bi-directional connection between
 // a birect client and a birect server.
 type Conn struct {
@@ -29,8 +37,8 @@ type Conn struct {
 }
 
 // Log logs the given arguments, along with contextual information about the Conn.
-func (c *Conn) Log(argv ...interface{}) {
-	log.Println(argv...)
+func (c *Conn) Log(args ...interface{}) {
+	debug(args...)
 }
 
 // Internal

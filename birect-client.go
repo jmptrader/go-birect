@@ -15,7 +15,7 @@ func Connect(url string) (client *Client, err error) {
 	client = &Client{make(jsonReqHandlerMap), make(protoReqHandlerMap), nil}
 	wsConnChan := make(chan *ws.Conn)
 	ws.Connect(url, func(event *ws.Event, conn *ws.Conn) {
-		client.Log("Client:", event)
+		debug("Client:", event)
 		switch event.Type {
 		case ws.Connected:
 			wsConnChan <- conn
