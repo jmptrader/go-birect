@@ -48,6 +48,7 @@ func UpgradeRequests(pattern string) (server *Server) {
 	return server
 }
 
+// ConnCount returns the number of current connections
 func (s *Server) ConnCount() int {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()

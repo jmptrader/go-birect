@@ -14,6 +14,7 @@ import (
 	"github.com/marcuswestin/go-ws"
 )
 
+// Debug will generate verbose output when set to true.
 var Debug = false
 
 func debug(args ...interface{}) {
