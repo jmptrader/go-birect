@@ -36,7 +36,10 @@ func UpgradeRequests(pattern string) (server *Server) {
 			if conn := server.getConn(wsConn); conn != nil {
 				conn.readAndHandleWireWrapperReader(event)
 			}
+		case ws.NetError:
+			debug("Net error")
 		case ws.Disconnected:
+			debug("Disconnected")
 			server.deregisterConn(wsConn)
 		default:
 			panic("birect.Server unknown event: " + event.String())

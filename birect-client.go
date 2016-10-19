@@ -12,7 +12,11 @@ type Client struct {
 
 // Connect connects to a birect server at url
 func Connect(url string) (client *Client, err error) {
-	client = &Client{make(jsonReqHandlerMap), make(protoReqHandlerMap), nil}
+	client = &Client{
+		jsonReqHandlerMap:  make(jsonReqHandlerMap),
+		protoReqHandlerMap: make(protoReqHandlerMap),
+		Conn:               nil,
+	}
 	wsConnChan := make(chan *ws.Conn)
 	ws.Connect(url, func(event *ws.Event, conn *ws.Conn) {
 		debug("Client:", event)
@@ -21,6 +25,10 @@ func Connect(url string) (client *Client, err error) {
 			wsConnChan <- conn
 		case ws.BinaryMessage:
 			client.Conn.readAndHandleWireWrapperReader(event)
+		case ws.Disconnected:
+			client.Log("TODO: reconnect logic (Disconnected)")
+		case ws.NetError:
+			client.Log("NetError")
 		default:
 			panic("TODO Handle event: " + event.String())
 		}
