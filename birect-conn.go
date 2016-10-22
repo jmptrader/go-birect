@@ -87,6 +87,10 @@ func (c *Conn) sendRequestAndWaitForResponse(reqID reqID, wireReq *wire.Request,
 		return errors.New(string(wireRes.Data))
 	}
 
+	if wireRes.Data == nil {
+		return nil
+	}
+
 	switch wireRes.Type {
 	case wire.DataType_JSON:
 		return json.Unmarshal(wireRes.Data, resValPtr)
