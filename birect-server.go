@@ -55,6 +55,16 @@ func (s *Server) ConnCount() int {
 	return len(s.connByWSConn)
 }
 
+func (s *Server) Conns() (conns []*Conn) {
+	s.connByWSConnMutex.Lock()
+	defer s.connByWSConnMutex.Unlock()
+	conns = make([]*Conn, 0, len(s.connByWSConn))
+	for _, conn := range s.connByWSConn {
+		conns = append(conns, conn)
+	}
+	return
+}
+
 // Internal
 ///////////
 
