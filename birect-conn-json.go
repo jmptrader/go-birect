@@ -98,6 +98,9 @@ type jsonRes struct {
 }
 
 func (j *jsonRes) encode() ([]byte, error) {
+	if j.resValPtr == nil {
+		return nil, nil
+	}
 	return json.Marshal(j.resValPtr)
 }
 func (j *jsonRes) dataType() wire.DataType {
