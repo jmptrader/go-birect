@@ -71,6 +71,7 @@ type response interface {
 func (c *Conn) sendRequestAndWaitForResponse(reqID reqID, wireReq *wire.Request, resValPtr interface{}) (err error) {
 	c.resChans[reqID] = make(resChan)
 	defer delete(c.resChans, reqID)
+	defer func() { err = errs.Wrap(err, nil) }()
 
 	c.Log("REQ", wireReq.Name, "ReqID:", reqID, "len:", len(wireReq.Data))
 	err = c.sendWrapper(&wire.Wrapper{
@@ -93,8 +94,16 @@ func (c *Conn) sendRequestAndWaitForResponse(reqID reqID, wireReq *wire.Request,
 
 	switch wireRes.Type {
 	case wire.DataType_JSON:
+		if resValPtr == nil {
+			err = errs.New(errs.Info{"data": string(wireRes.Data)}, "Expected struct pointer to deserialize JSON data into")
+			return
+		}
 		return json.Unmarshal(wireRes.Data, resValPtr)
 	case wire.DataType_Proto:
+		if resValPtr == nil {
+			err = errs.New(errs.Info{"len": len(wireRes.Data)}, "Expected struct pointer to deserialize protobuf data into")
+			return
+		}
 		return proto.Unmarshal(wireRes.Data, resValPtr.(proto.Message))
 	default:
 		return errors.New("Bad response wire type: " + wireRes.Type.String())
