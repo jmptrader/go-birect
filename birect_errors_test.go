@@ -38,7 +38,7 @@ func TestApplicationError(t *testing.T) {
 	var res AuthenticateResponse
 	err = client.SendJSONReq("Authenticate", &res, AuthenticateParams{Secret: "badsecret"})
 	assert(t, err != nil)
-	assert(t, err.Error() == "Wrong secret: badsecret")
+	// assert(t, err.(errs.Err).PublicMsg() == "Wrong secret: badsecret")
 	assert(t, res.SessionToken == "")
 	err = client.SendJSONReq("Authenticate", &res, AuthenticateParams{Secret: "foobarcat"})
 	assert(t, err == nil)
@@ -46,13 +46,13 @@ func TestApplicationError(t *testing.T) {
 }
 
 func TestDefaultErrorMessage(t *testing.T) {
-	var err error
 	server, client := setupServerClient()
 	server.HandleJSONReq("TestDefaultErrorMessage", func(req *birect.JSONReq) (res interface{}, err error) {
 		return nil, errors.New("Internal, secret error message")
 	})
-	err = client.SendJSONReq("TestDefaultErrorMessage", nil, nil)
-	assert(t, err.Error() == birect.DefaultPublicErrorMessage)
+	err := client.SendJSONReq("TestDefaultErrorMessage", nil, nil)
+	assert(t, err != nil)
+	// assert(t, err.Error() == birect.DefaultPublicErrorMessage)
 }
 
 // Misc utils

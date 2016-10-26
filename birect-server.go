@@ -55,6 +55,7 @@ func (s *Server) ConnCount() int {
 	return len(s.connByWSConn)
 }
 
+// Conns returns all the current connections
 func (s *Server) Conns() (conns []*Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()

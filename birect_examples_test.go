@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleUpgradeRequests_server() {
-	listener, err := net.Listen("tcp", ":8087")
+	listener, err := net.Listen("tcp", ":8097")
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ func ExampleUpgradeRequests_server() {
 }
 
 func ExampleConnect_client() {
-	conn, _ := birect.Connect("http://localhost:8087/birect/upgrade")
+	conn, _ := birect.Connect("http://localhost:8097/birect/upgrade")
 
 	type EchoParams struct{ Text string }
 	type EchoResponse struct{ Text string }
