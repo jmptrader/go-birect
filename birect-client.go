@@ -13,15 +13,15 @@ type Client struct {
 	OnDisconnectHack func()
 }
 
-// Connect connects to a birect server at url
-func Connect(url string) (client *Client, err error) {
+// Connect connects to a birect server at address
+func Connect(address string) (client *Client, err error) {
 	client = &Client{
 		jsonReqHandlerMap:  make(jsonReqHandlerMap),
 		protoReqHandlerMap: make(protoReqHandlerMap),
 		Conn:               nil,
 	}
 	wsConnChan := make(chan *ws.Conn)
-	ws.Connect(url, func(event *ws.Event, conn *ws.Conn) {
+	ws.Connect(address, func(event *ws.Event, conn *ws.Conn) {
 		debug("Client:", event)
 		switch event.Type {
 		case ws.Connected:

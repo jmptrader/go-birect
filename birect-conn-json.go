@@ -26,7 +26,7 @@ func (c *Conn) SendJSONReq(name string, resValPtr interface{}, paramsObj interfa
 
 // JSONReq wraps a request sent via SendJSONReq. Use ParseParams to access the JSON values.
 type JSONReq struct {
-	*Conn
+	Conn *Conn
 	data []byte
 }
 
@@ -41,6 +41,11 @@ func (j *JSONReq) ParseParams(valuePtr interface{}) {
 	if err != nil {
 		panic(errs.Wrap(err, nil, "Unable to parse params"))
 	}
+}
+
+// JSONString returns the request params data as a JSON string
+func (j *JSONReq) JSONString() string {
+	return string(j.data)
 }
 
 // Internal
