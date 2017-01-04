@@ -1,8 +1,8 @@
 hash: c5ae3ceade01040a17c12446b28d952bd4eeb1e7eb8c06c60c946fd95cfa331d
-updated: 2016-10-24T17:34:01.535313112-04:00
+updated: 2017-01-04T17:52:53.72341296-05:00
 imports:
 - name: github.com/golang/protobuf
-  version: 98fa357170587e470c5f27d3c3ea0947b71eb455
+  version: 552c7b9542c194800fd493123b3798ef0a832032
   subpackages:
   - proto
 - name: github.com/gorilla/websocket
@@ -10,5 +10,5 @@ imports:
 - name: github.com/marcuswestin/go-errs
   version: 5040c24e16df7c994407cacc6c8d1d4c29261762
 - name: github.com/marcuswestin/go-ws
-  version: ff56fa81edbf41d3bef266515283a499b7774f3a
+  version: 3b1cb3045b542e081197efc293485d18bf64d0c5
 testImports: []
