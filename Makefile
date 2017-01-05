@@ -2,8 +2,7 @@
 #########
 
 test: lint vet protos run-tests
-
-ci-test: vet run-tests
+test-ci: lint vet run-tests
 
 run-tests:
 	go test --race -v .

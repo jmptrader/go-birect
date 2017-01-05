@@ -1,7 +1,7 @@
-# dependencies:
-#   post:
-#     - make install-golint
+dependencies:
+  post:
+    - make install-golint
 
 test:
   override:
-    - make ci-test
+    - make test-ci
