@@ -17,6 +17,8 @@ import (
 // Log lets you control logging output.
 var Log = func(conn *Conn, argv ...interface{}) {}
 
+// LogToStdout causes all birect connections to star
+// logging to stdout
 func LogToStdout() {
 	Log = func(conn *Conn, argv ...interface{}) {
 		argv = append([]interface{}{"birect", conn.Info}, argv...)
