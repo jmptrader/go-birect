@@ -59,7 +59,7 @@ func TestDefaultErrorMessage(t *testing.T) {
 /////////////
 var lastPort = 18000
 
-func setupServerClient() (*birect.Server, *birect.Client) {
+func setupServerClient() (*birect.Handler, *birect.Client) {
 	lastPort += 1
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", lastPort))
 	if err != nil {

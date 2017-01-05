@@ -1,14 +1,16 @@
 package birect
 
 import (
+	"net"
+	"net/http"
 	"sync"
 
 	"github.com/marcuswestin/go-ws"
 )
 
-// Server is used register request handlers (for requests sent from clients),
+// Handler is used register request handlers (for requests sent from clients),
 // and to accept incoming connections from birect clients.
-type Server struct {
+type Handler struct {
 	jsonReqHandlerMap
 	protoReqHandlerMap
 	connByWSConnMutex *sync.Mutex
@@ -18,9 +20,27 @@ type Server struct {
 }
 
 // UpgradeRequests will upgrade all incoming HTTP requests that match `pattern`
-// to birect connections.
-func UpgradeRequests(pattern string) (server *Server) {
-	server = &Server{
+// to birect connections. Instead of using server.ListenAndServe(), you should
+// call http.ListenAndServe()
+func UpgradeRequests(pattern string) *Handler {
+	handler := newHandler()
+	ws.UpgradeRequests(pattern, getEventHandler(handler))
+	return handler
+}
+
+// NewServer returns a new server that you are expected to
+func NewServer() *Server {
+	return &Server{newHandler()}
+}
+
+// Server allows you to create a standalone birect upgrade server.
+// Call ListenAndServe to start upgrading all incoming http requests.
+type Server struct {
+	*Handler
+}
+
+func newHandler() *Handler {
+	return &Handler{
 		make(jsonReqHandlerMap),
 		make(protoReqHandlerMap),
 		&sync.Mutex{},
@@ -28,7 +48,29 @@ func UpgradeRequests(pattern string) (server *Server) {
 		func(*Conn) {},
 		func(*Conn) {},
 	}
-	ws.UpgradeRequests(pattern, func(event *ws.Event, wsConn *ws.Conn) {
+}
+
+// ListenAndServe will start listening to the given address and upgrading
+// any incoming http requests to websocket and birect connections.
+func (s *Handler) ListenAndServe(address string) (errChan chan error) {
+	errChan = make(chan error)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", ws.UpgradeHandlerFunc(getEventHandler(s)))
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		go func() {
+			errChan <- err
+		}()
+		return
+	}
+	go func() {
+		errChan <- http.Serve(listener, mux)
+	}()
+	return errChan
+}
+
+func getEventHandler(server *Handler) ws.EventHandler {
+	return func(event *ws.Event, wsConn *ws.Conn) {
 		switch event.Type {
 		case ws.Connected:
 			server.registerConn(wsConn)
@@ -37,26 +79,25 @@ func UpgradeRequests(pattern string) (server *Server) {
 				conn.readAndHandleWireWrapperReader(event)
 			}
 		case ws.NetError:
-			debug("Net error")
+			server.getConn(wsConn).Log("Net error")
 		case ws.Disconnected:
-			debug("Disconnected")
+			server.getConn(wsConn).Log("Disconnected")
 			server.deregisterConn(wsConn)
 		default:
-			panic("birect.Server unknown event: " + event.String())
+			panic("birect.Handler unknown event: " + event.String())
 		}
-	})
-	return server
+	}
 }
 
 // ConnCount returns the number of current connections
-func (s *Server) ConnCount() int {
+func (s *Handler) ConnCount() int {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	return len(s.connByWSConn)
 }
 
 // Conns returns all the current connections
-func (s *Server) Conns() (conns []*Conn) {
+func (s *Handler) Conns() (conns []*Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	conns = make([]*Conn, 0, len(s.connByWSConn))
@@ -69,7 +110,7 @@ func (s *Server) Conns() (conns []*Conn) {
 // Internal
 ///////////
 
-func (s *Server) registerConn(wsConn *ws.Conn) {
+func (s *Handler) registerConn(wsConn *ws.Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	conn := newConn(wsConn, s.jsonReqHandlerMap, s.protoReqHandlerMap)
@@ -78,7 +119,7 @@ func (s *Server) registerConn(wsConn *ws.Conn) {
 		defer s.ConnectHandler(conn)
 	}
 }
-func (s *Server) deregisterConn(wsConn *ws.Conn) {
+func (s *Handler) deregisterConn(wsConn *ws.Conn) {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	conn := s.connByWSConn[wsConn]
@@ -87,7 +128,7 @@ func (s *Server) deregisterConn(wsConn *ws.Conn) {
 		defer s.DisconnectHandler(conn)
 	}
 }
-func (s *Server) getConn(wsConn *ws.Conn) *Conn {
+func (s *Handler) getConn(wsConn *ws.Conn) *Conn {
 	s.connByWSConnMutex.Lock()
 	defer s.connByWSConnMutex.Unlock()
 	return s.connByWSConn[wsConn]
