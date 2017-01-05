@@ -14,12 +14,13 @@ import (
 	"github.com/marcuswestin/go-ws"
 )
 
-// Debug will generate verbose output when set to true.
-var Debug = false
+// Log lets you control logging output.
+var Log = func(conn *Conn, argv ...interface{}) {}
 
-func debug(args ...interface{}) {
-	if Debug {
-		log.Println(args...)
+func LogToStdout() {
+	Log = func(conn *Conn, argv ...interface{}) {
+		argv = append([]interface{}{"birect", conn.Info}, argv...)
+		log.Println(argv...)
 	}
 }
 
@@ -36,7 +37,7 @@ type Conn struct {
 
 // Log logs the given arguments, along with contextual information about the Conn.
 func (c *Conn) Log(args ...interface{}) {
-	debug(args...)
+	Log(c, args...)
 }
 
 // Internal

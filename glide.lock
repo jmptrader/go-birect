@@ -1,5 +1,5 @@
 hash: c5ae3ceade01040a17c12446b28d952bd4eeb1e7eb8c06c60c946fd95cfa331d
-updated: 2017-01-04T17:52:53.72341296-05:00
+updated: 2017-01-04T22:45:50.604155179-05:00
 imports:
 - name: github.com/golang/protobuf
   version: 552c7b9542c194800fd493123b3798ef0a832032
@@ -10,5 +10,5 @@ imports:
 - name: github.com/marcuswestin/go-errs
   version: 5040c24e16df7c994407cacc6c8d1d4c29261762
 - name: github.com/marcuswestin/go-ws
-  version: 3b1cb3045b542e081197efc293485d18bf64d0c5
+  version: 68a8af9c07e5092fae306821a39f35eca7ca07b6
 testImports: []

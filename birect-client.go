@@ -31,7 +31,7 @@ func Connect(address string) (client *Client, err error) {
 	}
 	wsConnChan := make(chan *ws.Conn)
 	ws.Connect(address, func(event *ws.Event, conn *ws.Conn) {
-		debug("Client:", event)
+		client.Log("Client event:", event)
 		switch event.Type {
 		case ws.Connected:
 			wsConnChan <- conn
