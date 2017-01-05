@@ -8,8 +8,7 @@ ci-test: vet run-tests
 run-tests:
 	go test --race -v .
 lint:
-	golint .
-	test -z "$$(golint .)"
+	golint -set_exit_status .
 vet:
 	go vet .
 
