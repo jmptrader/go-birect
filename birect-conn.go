@@ -196,9 +196,9 @@ func (c *Conn) handleRequest(wireReq *wire.Request) {
 	c.Log("HANDLE REQ", wireReq)
 	switch wireReq.Type {
 	case wire.DataType_JSON:
-		c.handleJSONWireReq(wireReq)
+		go c.handleJSONWireReq(wireReq)
 	case wire.DataType_Proto:
-		c.handleProtoWireReq(wireReq)
+		go c.handleProtoWireReq(wireReq)
 	default:
 		c.sendErrorResponse(wireReq, errs.New(errs.Info{"Type": wireReq.Type}, "Bad wireReq.Type"))
 	}
